@@ -1,0 +1,23 @@
+# Byte compiled
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+
+# Docker
+.dockerignore
+
+# Environmental Variable
+.env
+
+# Files type to ignore
+*.gz
+*.txt
