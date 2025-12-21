@@ -247,7 +247,7 @@ http://localhost:8080
 
 ---
 
-## 👤 Author
+## Author
 
 **Faruk Sedik**  
 Aspiring Data Engineer | Backend Developer  
