@@ -97,7 +97,6 @@ This structure enforces a **clean separation of concerns** between ingestion, tr
    - Decompresses the `.gz` file into raw text
 
 3. **Transform Data**
-   - Filters English (en) Wikipedia pages only
    - Selects the five target companies
    - Splits execution timestamp into:
      - year

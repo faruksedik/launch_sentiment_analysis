@@ -75,11 +75,13 @@ def transform_pageviews(
                 parts = line.strip().split()
                 if len(parts) < 4:
                     continue
+                
+                # Select and unpack useful parts
+                useful_part = parts[1:3]
+                page_title, pageviews = useful_part
 
-                project, page_title, pageviews, _ = parts
-
-                # Filter English Wikipedia records for target companies
-                if project == "en" and page_title in COMPANIES:
+                # Filter Wikipedia records for target companies
+                if page_title in COMPANIES:
                     writer.writerow(
                         [
                             page_title_id,

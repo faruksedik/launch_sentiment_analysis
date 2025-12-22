@@ -6,3 +6,39 @@
 2025-12-20 13:46:02,951 | INFO | launch_sentiment_analysis.include.scripts.db | load_to_postgres | Data successfully loaded into Postgres
 2025-12-20 13:46:04,189 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Running analysis: most viewed Wikipedia page with time context
 2025-12-20 13:46:04,259 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Most viewed Wikipedia page: 'Google' | Total views: 773 | Time window: 2025-12-10 at 16:00
+
+2025-12-22 17:18:05,628 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
+2025-12-22 17:18:05,639 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
+Traceback (most recent call last):
+  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
+    page_title, pageviews, _ = parts
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: too many values to unpack (expected 3)
+2025-12-22 17:18:36,993 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
+2025-12-22 17:18:37,003 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
+Traceback (most recent call last):
+  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
+    page_title, pageviews, _ = parts
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: too many values to unpack (expected 3)
+2025-12-22 17:19:08,415 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
+2025-12-22 17:19:08,425 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
+Traceback (most recent call last):
+  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
+    page_title, pageviews, _ = parts
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: too many values to unpack (expected 3)
+2025-12-22 17:19:40,513 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
+2025-12-22 17:19:40,522 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
+Traceback (most recent call last):
+  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
+    page_title, pageviews, _ = parts
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: too many values to unpack (expected 3)
+
+2025-12-22 17:30:06,167 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
+2025-12-22 17:30:21,465 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Transformation completed successfully | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv | records=569
+2025-12-22 17:30:22,281 | INFO | launch_sentiment_analysis.include.scripts.db | load_to_postgres | Loading transformed data into Postgres | file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
+2025-12-22 17:30:22,781 | INFO | launch_sentiment_analysis.include.scripts.db | load_to_postgres | Data successfully loaded into Postgres
+2025-12-22 17:30:24,457 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Running analysis: most viewed Wikipedia page with time context
+2025-12-22 17:30:24,516 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Most viewed Wikipedia page: 'Facebook' | Total views: 3360 | Time window: 2025-12-10 at 16:00
