@@ -20,4 +20,4 @@ venv/
 
 # Files type to ignore
 *.gz
-*.txt
+pageviews.txt
