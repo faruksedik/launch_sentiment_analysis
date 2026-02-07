@@ -12,12 +12,7 @@ venv/
 *.swp
 
 
-# Docker
-.dockerignore
-
-# Environmental Variable
-.env
-
 # Files type to ignore
 *.gz
-pageviews.txt
+*.txt
+*.csv

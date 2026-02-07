@@ -1,63 +1,131 @@
+from datetime import datetime, timezone
+from dateutil.relativedelta import relativedelta
 import requests
 from pathlib import Path
 
 from launch_sentiment_analysis.include.scripts.logger import get_logger
+from launch_sentiment_analysis.include.scripts import config
 
-logger = get_logger(__name__)
+
+logger = get_logger("download_pageviews")
 
 
-def download_pageviews(url: str, output_path: str) -> str:
+def get_adjusted_execution_time() -> datetime:
     """
-    Download a Wikimedia Wikipedia pageviews gzip file and save it locally.
+    Get the current runtime datetime (UTC) and subtract 2 months.
 
-    This function handles directory creation, streaming downloads for
-    memory efficiency, and robust error handling for network and I/O failures.
+    This is used to avoid downloading incomplete Wikimedia data,
+    since pageviews data is published with a delay.
 
-    Args:
-        url (str): Wikimedia pageviews URL.
-        output_path (str): Local file path where the file will be saved.
+    This uses the actual wall-clock time at task execution.
 
     Returns:
-        str: Path to the successfully downloaded file.
+        datetime: Adjusted runtime execution time (2 months earlier).
+    """
+    runtime_time = datetime.now(timezone.utc)
+    adjusted_execution_time = runtime_time - relativedelta(months=2)
+    return adjusted_execution_time
 
-    Raises:
-        Exception: Re-raises any exception after logging for Airflow visibility.
+
+def generate_pageviews_url(adjusted_execution_time: datetime) -> str:
+    """
+    Generate a Wikimedia pageviews download URL from a datetime object.
+
+    Args:
+        adjusted_execution_time (datetime): Adjusted execution datetime.
+
+    Returns:
+        str: Fully qualified Wikimedia pageviews download URL.
+    """
+    base_url = config.BASE_URL
+    year = adjusted_execution_time.strftime("%Y")
+    year_month = adjusted_execution_time.strftime("%Y-%m")
+    date_hour = adjusted_execution_time.strftime("%Y%m%d-%H")
+
+    return (
+        f"{base_url}"
+        f"{year}/{year_month}/"
+        f"pageviews-{date_hour}0000.gz"
+    )
+
+
+def generate_output_path(output_dir: str, adjusted_execution_time: datetime) -> Path:
+    """
+    Generate a dynamic output file path based on execution time.
+
+    Args:
+        output_dir (str): Base directory for raw .gz files.
+        adjusted_execution_time (datetime): Adjusted execution datetime.
+
+    Returns:
+        Path: Full path to the output .gz file.
+    """
+    date_hour = adjusted_execution_time.strftime("%Y%m%d-%H")
+    filename = f"pageviews_{date_hour}.gz"
+
+    return Path(output_dir) / filename
+
+
+
+def download_gz_file(url: str, output_path: Path) -> str:
+    """
+    Download a gzip file from a URL and save it locally.
+
+    Args:
+        url (str): Download URL.
+        output_path (Path): Path where the file will be saved.
+
+    Returns:
+        str: Path to the downloaded file.
+    """
+    logger.info("Starting download from URL: %s", url)
+
+    # Ensure destination directory exists
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    response = requests.get(url, stream=True, timeout=60)
+    response.raise_for_status()
+
+    # Write the response content to disk in chunks
+    with open(output_path, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            if chunk:
+                f.write(chunk)
+
+    logger.info("Download completed successfully: %s", output_path)
+    return str(output_path)
+
+
+def download_pageviews(output_dir: str) -> str:
+    """
+    Orchestrate Wikimedia pageviews download.
+
+    Steps:
+    1. Get Airflow runtime timestamp and subtract 2 months
+    2. Generate download URL
+    3. Generate dynamic output file path
+    4. Download the gzip file
+
+    Args:
+        output_dir (str): Base directory where raw files are stored.
+
+    Returns:
+        str: Path to the downloaded gzip file.
     """
     try:
-        # Log the start of the download process
-        logger.info(f"Starting download from URL: {url}")
+        # Adjust execution time
+        adjusted_execution_time = get_adjusted_execution_time()
 
-        # Ensure the destination directory exists
-        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        # Generate URL
+        url = generate_pageviews_url(adjusted_execution_time)
+        logger.info("Generated download URL: %s", url)
 
-        # Perform a streaming HTTP GET request to avoid loading large files into memory
-        response = requests.get(url, stream=True, timeout=60)
-        response.raise_for_status()
+        # Generate output path
+        output_path = generate_output_path(output_dir, adjusted_execution_time)
 
-        # Write the response content to disk in chunks
-        with open(output_path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    file.write(chunk)
+        # Download file
+        return download_gz_file(url, output_path)
 
-        # Log successful completion
-        logger.info(f"Download completed successfully: {output_path}")
-        return output_path
-
-    except requests.exceptions.RequestException as exc:
-        # Handle network-related errors (timeouts, DNS issues, 4xx/5xx responses)
-        logger.error(f"HTTP error occurred while downloading {url}: {exc}")
-        raise
-
-    except OSError as exc:
-        # Handle file system errors (permission issues, disk space, etc.)
-        logger.error(f"File system error while writing to {output_path}: {exc}")
-        raise
-
-    except Exception as exc:
-        # Catch-all for any unexpected failures
-        logger.exception(
-            f"Unexpected error during pageviews download "
-            f"(url={url}, output_path={output_path})"
-        )
+    except Exception:
+        logger.exception("Failed to download Wikimedia pageviews data")
         raise

@@ -1,44 +1,51 @@
-2025-12-20 13:44:16,726 | INFO | launch_sentiment_analysis.include.scripts.download_pageviews | download_pageviews | Starting download from URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-12/pageviews-20251210-160000.gz
-2025-12-20 13:45:39,537 | INFO | launch_sentiment_analysis.include.scripts.download_pageviews | download_pageviews | Download completed successfully: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews-20251210-160000.gz
-2025-12-20 13:45:46,467 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
-2025-12-20 13:46:01,269 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Transformation completed successfully | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv | records=5
-2025-12-20 13:46:02,878 | INFO | launch_sentiment_analysis.include.scripts.db | load_to_postgres | Loading transformed data into Postgres | file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
-2025-12-20 13:46:02,951 | INFO | launch_sentiment_analysis.include.scripts.db | load_to_postgres | Data successfully loaded into Postgres
-2025-12-20 13:46:04,189 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Running analysis: most viewed Wikipedia page with time context
-2025-12-20 13:46:04,259 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Most viewed Wikipedia page: 'Google' | Total views: 773 | Time window: 2025-12-10 at 16:00
+2026-02-02 21:21:17,796 | INFO | download_pageviews | download_pageviews | Generated download URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-10/pageviews-20251020-130000.gz
+2026-02-02 21:21:17,798 | INFO | download_pageviews | download_gz_file | Starting download from URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-10/pageviews-20251020-130000.gz
+2026-02-02 21:22:17,332 | INFO | download_pageviews | download_gz_file | Download completed successfully: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_20251020-13.gz
+2026-02-02 23:08:30,617 | INFO | download_pageviews | download_pageviews | Generated download URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-10/pageviews-20251020-130000.gz
+2026-02-02 23:08:30,618 | INFO | download_pageviews | download_gz_file | Starting download from URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-10/pageviews-20251020-130000.gz
+2026-02-02 23:09:09,356 | INFO | download_pageviews | download_gz_file | Download completed successfully: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_2025-10-20/13.gz
+2026-02-02 23:39:34,413 | INFO | download_pageviews | download_pageviews | Generated download URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-12/pageviews-20251202-230000.gz
+2026-02-02 23:39:34,413 | INFO | download_pageviews | download_gz_file | Starting download from URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-12/pageviews-20251202-230000.gz
+2026-02-02 23:40:11,247 | INFO | download_pageviews | download_gz_file | Download completed successfully: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_20251202-23.gz
 
-2025-12-22 17:18:05,628 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
-2025-12-22 17:18:05,639 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
-Traceback (most recent call last):
-  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
-    page_title, pageviews, _ = parts
-    ^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: too many values to unpack (expected 3)
-2025-12-22 17:18:36,993 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
-2025-12-22 17:18:37,003 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
-Traceback (most recent call last):
-  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
-    page_title, pageviews, _ = parts
-    ^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: too many values to unpack (expected 3)
-2025-12-22 17:19:08,415 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
-2025-12-22 17:19:08,425 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
-Traceback (most recent call last):
-  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
-    page_title, pageviews, _ = parts
-    ^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: too many values to unpack (expected 3)
-2025-12-22 17:19:40,513 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
-2025-12-22 17:19:40,522 | ERROR | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Pageviews transformation failed | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
-Traceback (most recent call last):
-  File "/opt/airflow/dags/launch_sentiment_analysis/include/scripts/transform_pageviews.py", line 79, in transform_pageviews
-    page_title, pageviews, _ = parts
-    ^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: too many values to unpack (expected 3)
+2026-02-03 22:38:51,672 | INFO | extract_pageviews | extract_pageviews | Beginning pageviews extraction workflow
+2026-02-03 22:38:51,677 | INFO | extract_pageviews | normalize_input_path | Validated gzip input file: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_20251202-23.gz
+2026-02-03 22:38:51,683 | INFO | extract_pageviews | generate_extracted_output_path | Using custom output directory: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging → /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.txt
+2026-02-03 22:38:51,684 | INFO | extract_pageviews | extract_gz_to_txt | Starting extraction: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_20251202-23.gz → /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.txt
+2026-02-03 22:38:55,154 | INFO | extract_pageviews | extract_gz_to_txt | Extraction completed successfully: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.txt
+2026-02-03 22:38:55,155 | INFO | extract_pageviews | extract_pageviews | Pageviews extraction workflow completed: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.txt
+2026-02-04 19:48:37,907 | INFO | transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.txt
+2026-02-04 19:48:37,909 | INFO | transform_pageviews | extract_event_time_from_filename | Successfully extracted event time 2025-12-02 23:00:00 from filename pageviews_20251202-23
+2026-02-04 19:48:37,909 | INFO | transform_pageviews | transform_pageviews | Extracted event timestamp: 2025-12-02 23:00:00
+2026-02-04 19:48:37,913 | INFO | transform_pageviews | generate_csv_output_path | Generated CSV output path: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv
+2026-02-04 19:48:37,914 | INFO | transform_pageviews | transform_pageviews | Output CSV path resolved: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv
+2026-02-04 19:48:54,417 | INFO | transform_pageviews | transform_pageviews | Transformation completed successfully | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv | processed_lines=6837393 | records_written=469
 
-2025-12-22 17:30:06,167 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.txt
-2025-12-22 17:30:21,465 | INFO | launch_sentiment_analysis.include.scripts.transform_pageviews | transform_pageviews | Transformation completed successfully | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv | records=569
-2025-12-22 17:30:22,281 | INFO | launch_sentiment_analysis.include.scripts.db | load_to_postgres | Loading transformed data into Postgres | file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews.csv
-2025-12-22 17:30:22,781 | INFO | launch_sentiment_analysis.include.scripts.db | load_to_postgres | Data successfully loaded into Postgres
-2025-12-22 17:30:24,457 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Running analysis: most viewed Wikipedia page with time context
-2025-12-22 17:30:24,516 | INFO | launch_sentiment_analysis.include.scripts.db | get_most_viewed_page | Most viewed Wikipedia page: 'Facebook' | Total views: 3360 | Time window: 2025-12-10 at 16:00
+2026-02-04 20:19:18,036 | INFO | db | load_to_postgres | Starting Postgres load | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv | conn_id=postgres_connection
+2026-02-04 20:19:18,041 | INFO | db | validate_load_files | Validated load files successfully | csv=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv | sql=/opt/airflow/dags/launch_sentiment_analysis/include/scripts/sql/load_to_postgres.sql
+2026-02-04 20:19:18,045 | INFO | db | read_copy_sql | Successfully read SQL file | path=/opt/airflow/dags/launch_sentiment_analysis/include/scripts/sql//load_to_postgres.sql | size=1773 bytes
+2026-02-04 20:19:18,045 | INFO | db | execute_copy_to_postgres | Starting COPY operation | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv | conn_id=postgres_connection
+2026-02-04 20:19:18,288 | INFO | db | execute_copy_to_postgres | COPY operation completed successfully | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv
+2026-02-04 20:19:18,289 | INFO | db | load_to_postgres | Postgres load completed successfully | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251202-23.csv | conn_id=postgres_connection
+
+2026-02-04 20:23:10,668 | INFO | download_pageviews | download_pageviews | Generated download URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-12/pageviews-20251204-200000.gz
+2026-02-04 20:23:10,670 | INFO | download_pageviews | download_gz_file | Starting download from URL: https://dumps.wikimedia.org/other/pageviews/2025/2025-12/pageviews-20251204-200000.gz
+2026-02-04 20:24:06,429 | INFO | download_pageviews | download_gz_file | Download completed successfully: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_20251204-20.gz
+2026-02-04 20:24:08,693 | INFO | extract_pageviews | extract_pageviews | Beginning pageviews extraction workflow
+2026-02-04 20:24:08,698 | INFO | extract_pageviews | normalize_input_path | Validated gzip input file: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_20251204-20.gz
+2026-02-04 20:24:08,703 | INFO | extract_pageviews | generate_extracted_output_path | Using custom output directory: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging → /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.txt
+2026-02-04 20:24:08,703 | INFO | extract_pageviews | extract_gz_to_txt | Starting extraction: /opt/airflow/dags/launch_sentiment_analysis/include/data/raw/pageviews_20251204-20.gz → /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.txt
+2026-02-04 20:24:11,591 | INFO | extract_pageviews | extract_gz_to_txt | Extraction completed successfully: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.txt
+2026-02-04 20:24:11,591 | INFO | extract_pageviews | extract_pageviews | Pageviews extraction workflow completed: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.txt
+2026-02-04 20:24:13,121 | INFO | transform_pageviews | transform_pageviews | Starting pageviews transformation | input=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.txt
+2026-02-04 20:24:13,123 | INFO | transform_pageviews | extract_event_time_from_filename | Successfully extracted event time 2025-12-04 20:00:00 from filename pageviews_20251204-20
+2026-02-04 20:24:13,123 | INFO | transform_pageviews | transform_pageviews | Extracted event timestamp: 2025-12-04 20:00:00
+2026-02-04 20:24:13,127 | INFO | transform_pageviews | generate_csv_output_path | Generated CSV output path: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv
+2026-02-04 20:24:13,128 | INFO | transform_pageviews | transform_pageviews | Output CSV path resolved: /opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv
+2026-02-04 20:24:27,090 | INFO | transform_pageviews | transform_pageviews | Transformation completed successfully | output=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv | processed_lines=7354072 | records_written=448
+2026-02-04 20:24:27,797 | INFO | db | load_to_postgres | Starting Postgres load | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv | conn_id=postgres_connection
+2026-02-04 20:24:27,801 | INFO | db | validate_load_files | Validated load files successfully | csv=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv | sql=/opt/airflow/dags/launch_sentiment_analysis/include/scripts/sql/load_to_postgres.sql
+2026-02-04 20:24:27,804 | INFO | db | read_copy_sql | Successfully read SQL file | path=/opt/airflow/dags/launch_sentiment_analysis/include/scripts/sql//load_to_postgres.sql | size=1773 bytes
+2026-02-04 20:24:27,804 | INFO | db | execute_copy_to_postgres | Starting COPY operation | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv | conn_id=postgres_connection
+2026-02-04 20:24:27,894 | INFO | db | execute_copy_to_postgres | COPY operation completed successfully | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv
+2026-02-04 20:24:27,894 | INFO | db | load_to_postgres | Postgres load completed successfully | csv_file=/opt/airflow/dags/launch_sentiment_analysis/include/data/staging/pageviews_20251204-20.csv | conn_id=postgres_connection

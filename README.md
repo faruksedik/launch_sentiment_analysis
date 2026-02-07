@@ -1,20 +1,32 @@
 # LaunchSentiment – Wikipedia Pageviews Data Pipeline
 
 ## Project Overview
-This capstone project demonstrates the design and implementation of a **data pipeline orchestrated with Apache Airflow**. The pipeline ingests, processes, stores, and analyzes Wikipedia pageviews data to support a sentiment-analysis-driven stock market prediction tool called **LaunchSentiment**.
 
-The underlying assumption is simple:
-- **Increase in Wikipedia pageviews** → positive public sentiment → potential stock price increase
-- **Decrease in pageviews** → loss of interest → potential stock price decrease
+**LaunchSentiment** is a capstone data engineering project that demonstrates how to design, build, and operate a **production-style ETL data pipeline using Apache Airflow**.
 
-This project focuses on building the *first version* of the data pipeline that processes Wikipedia pageviews for a **single hour** and performs a simple analytical query.
+The pipeline ingests hourly Wikipedia pageviews data, processes it, and stores curated records in a PostgreSQL database. The processed data can then be used by downstream analytics or machine learning systems to approximate **public sentiment around major technology companies**.
+
+### Core Assumption
+
+- 📈 **Increase in Wikipedia pageviews** → higher public interest → potentially positive market sentiment
+- 📉 **Decrease in pageviews** → reduced interest → potentially negative market sentiment
+
+This project focuses on **data engineering concerns only** (ingestion, orchestration, transformation, storage), not stock prediction itself.
 
 ---
 
 ## Business Scenario
-For example, one is hired as a **Data Engineer** by a data consulting organization tasked with building LaunchSentiment. The system leverages publicly available Wikipedia pageviews data to approximate market sentiment for publicly traded companies.
 
-For validation and simplicity, the pipeline tracks pageviews for **five major companies**:
+Imagine you are hired as a **Data Engineer** at a data consulting firm. Your task is to build the data backbone for a sentiment-driven analytics product called **LaunchSentiment**.
+
+Your responsibility is to:
+- Ingest large-scale public datasets reliably
+- Design a backfill-safe pipeline
+- Ensure clean transformations
+- Load data efficiently into a relational database
+
+For validation and simplicity, the pipeline tracks pageviews for **five major technology companies**:
+
 - Amazon
 - Apple
 - Facebook
@@ -27,27 +39,42 @@ For validation and simplicity, the pipeline tracks pageviews for **five major co
 
 - **Provider:** Wikimedia Foundation
 - **Dataset:** Wikipedia Pageviews (hourly aggregates)
-- **Format:** Gzipped text files
+- **Format:** Gzipped text files (`.gz`)
 - **Availability:** Public (since 2015)
 
-### Relevant Links
-- Pageviews index: https://dumps.wikimedia.org/other/pageviews
-- December 2025 data: https://dumps.wikimedia.org/other/pageviews/2025/2025-12/
+### Reference
 
-Each hourly file is:
-- ~50 MB (compressed)
-- ~200–250 MB (uncompressed)
+- Pageviews index: https://dumps.wikimedia.org/other/pageviews
+
+Each hourly file:
+- ~50 MB compressed
+- ~200–250 MB uncompressed
 
 ---
 
-## Project Objective
+## Pipeline Features
 
-Build an **Airflow DAG** that:
-1. Downloads Wikipedia pageviews data for **one specific hour**
-2. Extracts and processes the data
-3. Filters records for the five selected companies
-4. Loads transformed data into a database
-5. Performs a simple analysis to identify the **most viewed company page** for that hour
+- **Dynamic Download:**
+  - Automatically computes execution timestamps
+  - Applies a **2-month offset** to avoid incomplete or delayed data
+
+- **Streaming Extract:**
+  - Efficient `.gz` → `.txt` extraction
+  - Minimal memory usage
+
+- **Deterministic Transform:**
+  - Filters only target companies
+  - Generates SHA-256 surrogate keys
+  - Produces clean CSV output
+
+- **Efficient Load:**
+  - Uses PostgreSQL `COPY FROM STDIN`
+  - Optimized for large file ingestion
+
+- **Airflow-Native Design:**
+  - Modular tasks
+  - Idempotent execution
+  - XCom-driven data flow
 
 ---
 
@@ -58,14 +85,15 @@ launch_sentiment_analysis/
 ├── include/
 │   ├── data/
 │   │   ├── raw/
-│   │   │   └── pageviews-20251210-160000.gz   # Downloaded hourly gzip file
+│   │   │   └── pageviews_YYYYMMDD-HH.gz       # Downloaded hourly gzip file
 │   │   ├── staging/
-│   │   │   ├── pageviews.txt                  # Extracted raw text file
-│   │   │   └── pageviews.csv                  # Transformed CSV output
+│   │   │   ├── pageviews_YYYYMMDD-HH.txt      # Extracted raw text file
+│   │   │   └── pageviews_YYYYMMDD-HH.csv      # Transformed CSV output
 │   ├── logs/
-│   │   ├── analysis_result.log                # Persistent analysis output
 │   │   └── pipeline.log                       # Application-level logs
 │   ├── scripts/
+|   |   ├── sql/
+│   │   │   └── load_to_postgress.sql          # Sql script for data loading
 │   │   ├── download_pageviews.py              # Data ingestion logic
 │   │   ├── extract_pageviews.py               # Gzip extraction logic
 │   │   ├── transform_pageviews.py             # Transformation & filtering
@@ -81,180 +109,144 @@ This structure enforces a **clean separation of concerns** between ingestion, tr
 
 ## Pipeline Architecture
 
-### High-Level Workflow
-
 ```
-[Download] → [Extract] → [Transform] → [Load] → [Analyze]
+[Download] → [Extract] → [Transform] → [Load]
 ```
 
-### DAG Task Breakdown
-
-1. **Download Pageviews**
-   - Fetches a single hourly gzip file from Wikimedia
-   - Uses streaming download for memory efficiency
-
-2. **Extract File**
-   - Decompresses the `.gz` file into raw text
-
-3. **Transform Data**
-   - Selects the five target companies
-   - Splits execution timestamp into:
-     - year
-     - month
-     - day
-     - hour
-
-4. **Load to PostgreSQL**
-   - Creates table if it does not exist
-   - Inserts transformed records
-   - Ensures idempotency with primary keys and conflict handling
-
-5. **Analyze Results**
-   - Aggregates pageviews
-   - Determines the most viewed company page
-   - Logs results to Airflow logs and a persistent log file
+Each task passes file paths via **Airflow XCom**, keeping the pipeline declarative and traceable.
 
 ---
 
-## Database Schema
+## Prerequisites
+
+Before running this project, ensure you have:
+
+- Docker & Docker Compose
+- Python 3.10+
+- A local PostgreSQL installation
+
+---
+
+## Step-by-Step Setup Guide
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/faruksedik/launch_sentiment_analysis.git
+cd launch_sentiment_analysis
+```
+
+---
+
+### 2. Set Up PostgreSQL (Local)
+
+This project assumes PostgreSQL is **running on your local machine**, not inside Docker.
+
+#### Create Database and User
 
 ```sql
-CREATE TABLE wikipedia_pageviews (
-    page_title_id INTEGER PRIMARY KEY,
-    page_title TEXT NOT NULL,
-    pageviews INTEGER NOT NULL,
-    year INTEGER NOT NULL,
-    month INTEGER NOT NULL,
-    day INTEGER NOT NULL,
-    hour INTEGER NOT NULL
-);
+CREATE DATABASE launch_sentiment;
+CREATE USER launch_user WITH PASSWORD 'strong_password';
+GRANT ALL PRIVILEGES ON DATABASE launch_sentiment TO launch_user;
 ```
+
+Ensure PostgreSQL is listening on port `5432`.
 
 ---
 
-## Analysis Output
+### 3. Configure Airflow Connection (PostgreSQL)
 
-The pipeline produces a clear, human-readable report such as:
+In the **Airflow UI**:
 
-```
-Most viewed Wikipedia page: 'Amazon' | Total views: 152340 | Time window: 2025-12-10 at 16:00
-```
-
-Results are written to:
-- Airflow task logs
-- `/opt/airflow/dags/launch_sentiment_analysis/include/logs/analysis_result.log`
-
----
-
-## Database Setup (Local PostgreSQL)
-
-The PostgreSQL database used by this pipeline is expected to run **on the local machine**, outside Docker, while Airflow runs inside Docker containers.
-
-To enable communication between Airflow (Docker) and the local PostgreSQL instance, the special hostname below is used.
-
-### Database Connection Details
+1. Go to **Admin → Connections**
+2. Create a new connection:
 
 | Field | Value |
 |------|------|
+| Conn Id | `postgres_connection` |
+| Conn Type | `Postgres` |
 | Host | `host.docker.internal` |
-| Database | `dbname` |
-| User | `postgres_user` |
-| Password | `postgres_password` |
+| Schema | `launch_sentiment` |
+| Login | `launch_user` |
+| Password | `strong_password` |
 | Port | `5432` |
 
-> **Why `host.docker.internal`?**  
-> This hostname allows Docker containers to securely access services running on the host machine without exposing ports unnecessarily.
-
-### Credential Management
-
-- Database credentials are **not hard-coded** in the DAG or scripts
-- Credentials are managed using **Airflow Variables**
-- This ensures:
-  - Improved security
-  - Easy environment configuration
-  - Clean separation between code and secrets
+> `host.docker.internal` allows Docker containers to reach services running on the host machine.
 
 ---
 
-## Configuration & Credentials Management
+### 4. Set Airflow Variables
 
-- Database credentials are **not hard-coded**
-- PostgreSQL connection details are managed using **Airflow Variables**
-- This ensures:
-  - Better security
-  - Environment flexibility (local, staging, production)
-  - Cleaner DAG code
+In **Admin → Variables**, create the following:
 
-
----
-
-## Technologies Used
-
-- **Apache Airflow** – workflow orchestration
-- **Python 3.11** – pipeline logic
-- **PostgreSQL** – data storage and analysis
-- **apache-airflow-providers-postgres** – database integration via PostgresHook
-- **Docker & Docker Compose** – environment setup
-- **Wikimedia Pageviews Dataset** – data source
+| Key | Example Value |
+|----|---------------|
+| `PAGEVIEWS_SENTIMENT_ANALYSIS_RAW_DATA_DIR` | `/opt/airflow/include/data/raw` |
+| `PAGEVIEWS_SENTIMENT_ANALYSIS_STAGING_DATA_DIR` | `/opt/airflow/include/data/staging` |
+| `PAGEVIEWS_SENTIMENT_ANALYSIS_SQL_FILE_DIR` | `/opt/airflow/include/scripts/sql` |
 
 ---
 
-## Best Practices Implemented
+### 5. Install Python Dependencies
 
-- Idempotent data loads (`ON CONFLICT DO NOTHING`)
-- Streaming downloads for large files
-- Structured logging with function-level context
-- Automatic retries and failure visibility via Airflow
-- Transaction-safe database operations
-- Clear separation of concerns (extract, transform, load, analyze)
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## How to Run the Pipeline
-
-1. Clone the repository
-2. Start Airflow using Docker Compose:
+### 6. Start Airflow
 
 ```bash
 docker compose up --build
 ```
 
-3. Open Airflow UI:
+Access the Airflow UI:
 
 ```
 http://localhost:8080
 ```
 
-4. Trigger the DAG manually or wait for the scheduled run
+---
+
+### 7. Run the Pipeline
+
+- Enable the DAG: `launch_sentiment_analysis_dag`
+- Trigger manually or allow scheduled execution
+- Monitor logs for each task
 
 ---
 
-## Deliverables Checklist
+## Logging & Observability
 
-✔ Airflow DAG orchestrating the pipeline  
-✔ End-to-end runnable data pipeline  
-✔ Database-loaded transformed data  
-✔ Analytical query for most viewed company  
-✔ Architecture and design documentation  
-✔ Best practices: retries, logging, idempotence  
+- All scripts use a centralized logger via `get_logger`.
+- Logs include:
+  - Download progress
+  - Extraction completion
+  - Transformation row counts
+  - PostgreSQL load status
+- Errors are fully traceable for debugging.
 
 ---
 
-## Project Duration
+## Backfill & Idempotency
 
-**1 Week**
+- Pipeline uses execution timestamps
+- Applies a fixed **2-month offset**
+- Safe for historical backfills
+- File naming is deterministic across runs
 
 ---
 
 ## Author
 
 **Faruk Sedik**  
-Aspiring Data Engineer | Backend Developer  
+Data Engineer | Backend Developer  
 Focused on building scalable, production-grade data systems
 
 ---
 
 ## License
 
-This project is for educational and demonstration purposes.
+This project is for educational and demonstration purposes only.
 
